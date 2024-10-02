@@ -26,7 +26,7 @@ int pirState1 = LOW;
 int pirState2 = LOW;
 
 // Variables para el modo manual/automático
-bool modoManual = false;
+bool modoManual = true;
 Servo servoPing;
 
 // Umbral para el sensor PING
@@ -35,6 +35,37 @@ int umbralDistancia = 30;  // Distancia en cm
 // Inicializar la recepción de infrarrojo
 IRrecv irrecv(sensorIR);
 decode_results resultados;
+int button = 0;
+
+int mapCodeToButton(unsigned long code) 
+{
+  // Check for codes from this specific remote
+  if ((code & 0x0000FFFF) == 0x0000BF00) {
+    // No longer need the lower 16 bits. Shift the code by 16
+    // to make the rest easier.
+    code >>= 16;
+    // Check that the value and inverse bytes are complementary.
+    if (((code >> 8) ^ (code & 0x00FF)) == 0x00FF) {
+      return code & 0xFF;
+    }
+  }
+  return -1;
+}
+
+int readInfrared() 
+{
+  int result = -1;
+  // Check if we've received a new code
+  if (IrReceiver.decode()) {
+    // Get the infrared code
+    unsigned long code = IrReceiver.decodedIRData.decodedRawData;
+    // Map it to a specific button on the remote
+    result = mapCodeToButton(code);
+    // Enable receiving of the next value
+    IrReceiver.resume();
+  }
+  return result;
+}
 
 void setup() {
   // Configurar los pines
@@ -57,7 +88,8 @@ void setup() {
   servoPing.write(90);  // Inicialmente el sensor mira hacia el frente
 
   Serial.begin(9600);
-  irrecv.enableIRIn();  // Habilitar la recepción de IR
+  //irrecv.enableIRIn();  // Habilitar la recepción de IR
+  IrReceiver.begin(2);
 
   // Esperar estabilización de los sensores PIR
   Serial.println("Esperando estabilización de los PIR...");
@@ -66,11 +98,22 @@ void setup() {
 }
 
 void loop() {
+  button = readInfrared();
+  delay(10);
+  
+  if (button == 0){
+    modoManual = !modoManual;
+    if(modoManual){
+      //detenerse();
+      //ledRGB(LOW, LOW, LOW);
+    }
+  }
+  
   if (modoManual) {
     // Modo Manual
-    if (irrecv.decode(&resultados)) {
-      controlarModoManual(resultados.value);
-      irrecv.resume();  // Preparar para recibir el próximo comando
+    if (modoManual) {
+      controlarModoManual(button);
+      //irrecv.resume();  // Preparar para recibir el próximo comando
     }
   } else {
     // Modo Automático
@@ -80,7 +123,7 @@ void loop() {
 
 void controlarModoManual(unsigned long codigo) {
   switch (codigo) {
-    case 0xFF00BF00:  // Tecla "Encendido/Apagado"
+    /*case 1:  // Tecla "Encendido/Apagado"
       modoManual = !modoManual;  // Alternar entre manual y automático
       if (modoManual) {
         Serial.println("Modo manual activado.");
@@ -88,35 +131,35 @@ void controlarModoManual(unsigned long codigo) {
         Serial.println("Modo automático activado.");
       }
       detener();  // Detener el robot al cambiar de modo
-      break;
-    case 0xF30CBF00:  // Tecla "0" - Parar
+      break;*/
+    case 12:  // Tecla "0" - Parar
       detener();
       break;
-    case 0xEF10BF00:  // Tecla "1" - Avanzar
+    case 16:  // Tecla "1" - Avanzar
       avanzar();
       break;
-    case 0xEE11BF00:  // Tecla "2" - Retroceder
+    case 17:  // Tecla "2" - Retroceder
       retroceder();
       break;
-    case 0xED12BF00:  // Tecla "3" - Girar a la izquierda
+    case 18:  // Tecla "3" - Girar a la izquierda
       girarIzquierda();
       break;
-    case 0xEB14BF00:  // Tecla "4" - Girar a la derecha
+    case 20:  // Tecla "4" - Girar a la derecha
       girarDerecha();
       break;
-    case 0xEA15BF00:  // Tecla "5" - Avanzar rápido
+    case 21:  // Tecla "5" - Avanzar rápido
       avanzarRapido();
       break;
-    case 0xE916BF00:  // Tecla "6" - Retroceder rápido
+    case 22:  // Tecla "6" - Retroceder rápido
       retrocederRapido();
       break;
-    case 0xE718BF00:  // Tecla "7" - Giro suave izquierda
+    case 24:  // Tecla "7" - Giro suave izquierda
       girarSuaveIzquierda();
       break;
-    case 0xE619BF00:  // Tecla "8" - Giro suave derecha
+    case 25:  // Tecla "8" - Giro suave derecha
       girarSuaveDerecha();
       break;
-    case 0xE51ABF00:  // Tecla "9" - Parar completamente
+    case 26:  // Tecla "9" - Parar completamente
       detener();
       break;
     default:
