@@ -2,8 +2,10 @@
 #include <IRremote.h>
 
 // Pines de los motores
-int adelante1 = 5;
-int atras1 = 6;
+int enableA = 5;
+int enableB = 6;
+int adelante1 = 11;
+int atras1 = 9;
 int adelante2 = 7;
 int atras2 = 8;
 
@@ -73,6 +75,10 @@ void setup() {
   pinMode(atras1, OUTPUT);
   pinMode(adelante2, OUTPUT);
   pinMode(atras2, OUTPUT);
+  pinMode(enableA, OUTPUT);
+  pinMode(enableB, OUTPUT);
+  digitalWrite(enableA, HIGH);
+  digitalWrite(enableB, HIGH);
 
   pinMode(rojo, OUTPUT);
   pinMode(azul, OUTPUT);
@@ -83,6 +89,8 @@ void setup() {
 
   pinMode(pir1, INPUT);
   pinMode(pir2, INPUT);
+
+  ledRGB(HIGH, LOW, LOW);
 
   servoPing.attach(servomotorPin);
   servoPing.write(90);  // Inicialmente el sensor mira hacia el frente
@@ -95,6 +103,7 @@ void setup() {
   Serial.println("Esperando estabilización de los PIR...");
   delay(3000);
   Serial.println("Sistema listo.");
+  ledRGB(LOW, LOW, LOW);
 }
 
 void loop() {
@@ -104,8 +113,8 @@ void loop() {
   if (button == 0){
     modoManual = !modoManual;
     if(modoManual){
-      //detenerse();
-      //ledRGB(LOW, LOW, LOW);
+      detener();
+      ledRGB(LOW, LOW, LOW);
     }
   }
   
@@ -123,44 +132,45 @@ void loop() {
 
 void controlarModoManual(unsigned long codigo) {
   switch (codigo) {
-    /*case 1:  // Tecla "Encendido/Apagado"
-      modoManual = !modoManual;  // Alternar entre manual y automático
-      if (modoManual) {
-        Serial.println("Modo manual activado.");
-      } else {
-        Serial.println("Modo automático activado.");
-      }
-      detener();  // Detener el robot al cambiar de modo
-      break;*/
     case 12:  // Tecla "0" - Parar
       detener();
+      ledRGB(LOW, LOW, LOW);
       break;
     case 16:  // Tecla "1" - Avanzar
       avanzar();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 17:  // Tecla "2" - Retroceder
       retroceder();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 18:  // Tecla "3" - Girar a la izquierda
       girarIzquierda();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 20:  // Tecla "4" - Girar a la derecha
       girarDerecha();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 21:  // Tecla "5" - Avanzar rápido
       avanzarRapido();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 22:  // Tecla "6" - Retroceder rápido
       retrocederRapido();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 24:  // Tecla "7" - Giro suave izquierda
       girarSuaveIzquierda();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 25:  // Tecla "8" - Giro suave derecha
       girarSuaveDerecha();
+      ledRGB(LOW, LOW, HIGH);
       break;
     case 26:  // Tecla "9" - Parar completamente
       detener();
+      ledRGB(LOW, LOW, LOW);
       break;
     default:
       Serial.println("Tecla no asignada.");
@@ -170,6 +180,7 @@ void controlarModoManual(unsigned long codigo) {
 
 // Funciones para el modo automático
 void modoAutomatico() {
+  ledRGB(HIGH, HIGH, HIGH);
   int pirVal1 = digitalRead(pir1);
   int pirVal2 = digitalRead(pir2);
 
@@ -264,4 +275,11 @@ void girarSuaveIzquierda() {
 void girarSuaveDerecha() {
   // Ajusta los motores para girar suavemente a la derecha
   Serial.println("Girando suavemente a la derecha.");
+}
+
+void ledRGB(bool red, bool green, bool blue)
+{
+  digitalWrite(rojo, red);
+  digitalWrite(verde, green);
+  digitalWrite(azul, blue);
 }
