@@ -1,11 +1,18 @@
 #include <IRremote.h>
+#include <Servo.h>
 
 bool manual = true;
 int button = 0;
 int cm = 0;
+
 const int ledR = 4;
 const int ledG = 0;
 const int ledB = 12;
+
+const int sensorI = 1;
+const int sensorD = 10;
+const int pinServo = 3;
+Servo servo;
 
 long readUltrasonicDistance(int triggerPin, int echoPin)
 {
@@ -54,11 +61,16 @@ int readInfrared()
 void setup()
 {
   Serial.begin(9600);
+
   IrReceiver.begin(2);
   
   pinMode(ledR, OUTPUT);
   pinMode(ledG, OUTPUT);
   pinMode(ledB, OUTPUT);
+
+  servo.attach(pinServo, 500, 2500);
+  pinMode(sensorI, INPUT);
+  pinMode(sensorD, INPUT);
 }
 
 void loop()
@@ -121,9 +133,19 @@ void automatico()
   cm = readUltrasonicDistance(A5, A4);
 
   //acá controlar los sensores IR
-  //rotar el servo 
-  //controlar distancia
-  //rotar robot
+  if(digitalRead(sensorI) == HIGH){
+    servo.write(135);
+    //controlar distancia
+    //rotar robot izq
+  }
+  else if(digitalRead(sensorD) == HIGH){
+    servo.write(45);
+    //controlar distancia
+    //rotar robot derecha
+  }
+  else{
+    servo.write(90);
+  }
 
   /*if(cm < distanciaFrenado){
     avanzar
