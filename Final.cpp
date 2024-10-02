@@ -16,6 +16,7 @@ int verde = 0;
 
 // Pines de los sensores y servo
 int sensorIR = 2;  // Pin del receptor IR
+int button = 0;    // Botón presionado
 int servomotorPin = 3;
 int trig = A5;
 int echo = A4;
@@ -33,11 +34,6 @@ Servo servoPing;
 
 // Umbral para el sensor PING
 int umbralDistancia = 30;  // Distancia en cm
-
-// Inicializar la recepción de infrarrojo
-IRrecv irrecv(sensorIR);
-decode_results resultados;
-int button = 0;
 
 int mapCodeToButton(unsigned long code) 
 {
@@ -96,12 +92,11 @@ void setup() {
   servoPing.write(90);  // Inicialmente el sensor mira hacia el frente
 
   Serial.begin(9600);
-  //irrecv.enableIRIn();  // Habilitar la recepción de IR
-  IrReceiver.begin(2);
+  IrReceiver.begin(sensorIR);
 
   // Esperar estabilización de los sensores PIR
   Serial.println("Esperando estabilización de los PIR...");
-  delay(3000);
+  delay(2000);
   Serial.println("Sistema listo.");
   ledRGB(LOW, LOW, LOW);
 }
@@ -122,7 +117,6 @@ void loop() {
     // Modo Manual
     if (modoManual) {
       controlarModoManual(button);
-      //irrecv.resume();  // Preparar para recibir el próximo comando
     }
   } else {
     // Modo Automático
