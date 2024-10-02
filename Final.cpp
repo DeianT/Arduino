@@ -22,7 +22,7 @@ int trig = A5;
 int echo = A4;
 
 int pir1 = 10;  // PIR 1
-int pir2 = 9;   // PIR 2 (ajustado al pin digital 9)
+int pir2 = 1;   // PIR 2
 
 // Estado de los PIR
 int pirState1 = LOW;
@@ -146,22 +146,6 @@ void controlarModoManual(unsigned long codigo) {
       girarDerecha();
       ledRGB(LOW, LOW, HIGH);
       break;
-    case 21:  // Tecla "5" - Avanzar rápido
-      avanzarRapido();
-      ledRGB(LOW, LOW, HIGH);
-      break;
-    case 22:  // Tecla "6" - Retroceder rápido
-      retrocederRapido();
-      ledRGB(LOW, LOW, HIGH);
-      break;
-    case 24:  // Tecla "7" - Giro suave izquierda
-      girarSuaveIzquierda();
-      ledRGB(LOW, LOW, HIGH);
-      break;
-    case 25:  // Tecla "8" - Giro suave derecha
-      girarSuaveDerecha();
-      ledRGB(LOW, LOW, HIGH);
-      break;
     case 26:  // Tecla "9" - Parar completamente
       detener();
       ledRGB(LOW, LOW, LOW);
@@ -249,26 +233,6 @@ void detener() {
   digitalWrite(adelante2, LOW);
   digitalWrite(atras2, LOW);
   Serial.println("Detenido.");
-}
-
-void avanzarRapido() {
-  // Ajusta la velocidad para avanzar más rápido
-  Serial.println("Avanzando rápido.");
-}
-
-void retrocederRapido() {
-  // Ajusta la velocidad para retroceder más rápido
-  Serial.println("Retrocediendo rápido.");
-}
-
-void girarSuaveIzquierda() {
-  // Ajusta los motores para girar suavemente a la izquierda
-  Serial.println("Girando suavemente a la izquierda.");
-}
-
-void girarSuaveDerecha() {
-  // Ajusta los motores para girar suavemente a la derecha
-  Serial.println("Girando suavemente a la derecha.");
 }
 
 void ledRGB(bool red, bool green, bool blue)
