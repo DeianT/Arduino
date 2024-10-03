@@ -11,8 +11,8 @@ int atras2 = 8;
 
 // Pines del LED
 int rojo = 4;
-int azul = 12;
-int verde = 0;
+//int azul = 12;
+//int verde = 0;
 
 // Pines de los sensores y servo
 int sensorIR = 2;  // Pin del receptor IR
@@ -21,8 +21,8 @@ int servomotorPin = 3;
 int trig = A5;
 int echo = A4;
 
-int pir1 = 10;  // PIR 1
-int pir2 = 1;   // PIR 2
+int pirIzq = 12;  // PIR 1
+int pirDer = 10;   // PIR 2
 
 // Estado de los PIR
 int pirState1 = LOW;
@@ -77,16 +77,16 @@ void setup() {
   digitalWrite(enableB, HIGH);
 
   pinMode(rojo, OUTPUT);
-  pinMode(azul, OUTPUT);
-  pinMode(verde, OUTPUT);
+  //pinMode(azul, OUTPUT);
+  //pinMode(verde, OUTPUT);
 
   pinMode(trig, OUTPUT);
   pinMode(echo, INPUT);
 
-  pinMode(pir1, INPUT);
-  pinMode(pir2, INPUT);
+  pinMode(pirIzq, INPUT);
+  pinMode(pirDer, INPUT);
 
-  ledRGB(HIGH, LOW, LOW);
+  //ledRGB(HIGH, LOW, LOW);
 
   servoPing.attach(servomotorPin);
   servoPing.write(90);  // Inicialmente el sensor mira hacia el frente
@@ -98,7 +98,8 @@ void setup() {
   Serial.println("Esperando estabilización de los PIR...");
   delay(2000);
   Serial.println("Sistema listo.");
-  ledRGB(LOW, LOW, LOW);
+  //ledRGB(LOW, LOW, LOW);
+  digitalWrite(rojo, HIGH);
 }
 
 void loop() {
@@ -109,7 +110,7 @@ void loop() {
     modoManual = !modoManual;
     if(modoManual){
       detener();
-      ledRGB(LOW, LOW, LOW);
+      //ledRGB(LOW, LOW, LOW);
     }
   }
   
@@ -128,27 +129,27 @@ void controlarModoManual(unsigned long codigo) {
   switch (codigo) {
     case 12:  // Tecla "0" - Parar
       detener();
-      ledRGB(LOW, LOW, LOW);
+      //ledRGB(LOW, LOW, LOW);
       break;
     case 16:  // Tecla "1" - Avanzar
       avanzar();
-      ledRGB(LOW, LOW, HIGH);
+      //ledRGB(LOW, LOW, HIGH);
       break;
     case 17:  // Tecla "2" - Retroceder
       retroceder();
-      ledRGB(LOW, LOW, HIGH);
+      //ledRGB(LOW, LOW, HIGH);
       break;
     case 18:  // Tecla "3" - Girar a la izquierda
       girarIzquierda();
-      ledRGB(LOW, LOW, HIGH);
+      //ledRGB(LOW, LOW, HIGH);
       break;
     case 20:  // Tecla "4" - Girar a la derecha
       girarDerecha();
-      ledRGB(LOW, LOW, HIGH);
+      //ledRGB(LOW, LOW, HIGH);
       break;
     case 26:  // Tecla "9" - Parar completamente
       detener();
-      ledRGB(LOW, LOW, LOW);
+      //ledRGB(LOW, LOW, LOW);
       break;
     default:
       Serial.println("Tecla no asignada.");
@@ -158,9 +159,9 @@ void controlarModoManual(unsigned long codigo) {
 
 // Funciones para el modo automático
 void modoAutomatico() {
-  ledRGB(HIGH, HIGH, HIGH);
-  int pirVal1 = digitalRead(pir1);
-  int pirVal2 = digitalRead(pir2);
+  //ledRGB(HIGH, HIGH, HIGH);
+  int pirVal1 = digitalRead(pirIzq);
+  int pirVal2 = digitalRead(pirDer);
 
   long distancia = medirDistancia();
 
@@ -238,6 +239,6 @@ void detener() {
 void ledRGB(bool red, bool green, bool blue)
 {
   digitalWrite(rojo, red);
-  digitalWrite(verde, green);
-  digitalWrite(azul, blue);
+  //digitalWrite(verde, green);
+  //digitalWrite(azul, blue);
 }
